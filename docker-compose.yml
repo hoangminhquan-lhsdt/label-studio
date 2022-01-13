@@ -28,6 +28,22 @@ services:
       - ./deploy/nginx/certs:/certs:ro
     command: nginx -g "daemon off;"
 
+  nginx-proxy:
+    networks:
+      - no-internet
+      - internet
+    image: nginx:1.21
+    volumes:
+      - ./nginx_proxy.conf:/etc/nginx/nginx.conf
+    restart: always
+
+  protected-container:
+    networks:
+      - no-internet
+    links:
+      - nginx_proxy.conf
+    image: nginx:1.21
+
   app:
     stdin_open: true
     tty: true
@@ -74,3 +90,8 @@ services:
 
 volumes:
   static: {}
+
+networks:
+  internet: {}
+  no-internet:
+    internal: true
